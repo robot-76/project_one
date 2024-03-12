@@ -84,14 +84,16 @@ class PositionEmbeddingLearned(nn.Module):
         return pos
 
 
-def build_position_encoding(args):
-    N_steps = args.hidden_dim // 2
-    if args.position_embedding in ('v2', 'sine'):
+def build_position_encoding(position_embedding, hidden_dim):
+    N_steps = hidden_dim // 2
+    if position_embedding == 'sine':
         # TODO find a better way of exposing other arguments
         position_embedding = PositionEmbeddingSine(N_steps, normalize=True)
-    elif args.position_embedding in ('v3', 'learned'):
+    elif position_embedding == 'learned':
         position_embedding = PositionEmbeddingLearned(N_steps)
+    elif position_embedding is True:
+        position_embedding = PositionEmbeddingSine(N_steps, normalize=True)
     else:
-        raise ValueError(f"not supported {args.position_embedding}")
+        raise ValueError(f"nott supported {position_embedding}")
 
     return position_embedding
